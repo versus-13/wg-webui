@@ -1,0 +1,120 @@
+{{define "title"}}{{t "page.peers"}}{{end}}
+
+{{define "body"}}
+<nav class="nav">
+  <div class="nav-brand">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    WireGuard UI <span class="ver">{{version}}</span>
+  </div>
+  <div class="nav-links">
+    <a href="/settings">{{t "nav.settings"}}</a>
+    <a href="/status">{{t "nav.status"}}</a>
+    <a href="/logout">{{t "nav.logout"}}</a>
+  </div>
+</nav>
+<div class="container">
+  {{range .Flashes}}
+  <div class="alert alert-{{.Category}}">{{.Text}}</div>
+  {{end}}
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">{{t "msg.total_peers"}}</div>
+      <div class="stat-value">{{len .Peers}}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">{{t "msg.active"}}</div>
+      <div class="stat-value" style="color:var(--success)">{{countEnabled .Peers}}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">{{t "msg.iface"}}</div>
+      <div class="stat-value" style="font-size:16px;margin-top:4px;">{{.Iface}}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">{{t "msg.peers"}}</span>
+      <button class="btn btn-primary btn-sm" onclick="document.getElementById('addModal').classList.add('open')">
+        {{t "btn.add"}}
+      </button>
+    </div>
+    {{if .Peers}}
+    <table>
+      <thead>
+        <tr>
+          <th>{{t "label.name"}}</th>
+          <th>IP</th>
+          <th>{{t "nav.status"}}</th>
+          <th>Handshake</th>
+          <th>{{t "msg.created"}}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Peers}}
+        <tr>
+          <td><strong>{{.Name}}</strong></td>
+          <td style="font-family:monospace">{{.IP}}</td>
+          <td>
+            {{if .Enabled}}
+              <span class="badge badge-green">{{t "msg.active_badge"}}</span>
+            {{else}}
+              <span class="badge badge-red">{{t "msg.disabled_badge"}}</span>
+            {{end}}
+          </td>
+          <td style="font-size:13px;color:var(--muted)">
+            {{index $.Handshakes .PubKey}}
+          </td>
+          <td style="font-size:13px;color:var(--muted)">{{.Created}}</td>
+          <td style="text-align:right;white-space:nowrap">
+            <a href="/peer/{{.Name}}/config" class="btn btn-ghost btn-sm">{{t "btn.config"}}</a>
+            <form method="post" action="/peer/{{.Name}}/toggle" style="display:inline">
+              <button class="btn btn-ghost btn-sm">
+                {{if .Enabled}}{{t "btn.disable"}}{{else}}{{t "btn.enable"}}{{end}}
+              </button>
+            </form>
+            <form method="post" action="/peer/{{.Name}}/delete" style="display:inline"
+                  onsubmit="return confirm('{{printf (t `confirm.delete_peer`) .Name}}')">
+              <button class="btn btn-danger btn-sm">{{t "btn.delete"}}</button>
+            </form>
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+    {{else}}
+    <p style="color:var(--muted);text-align:center;padding:2rem 0">
+      {{t "msg.no_peers"}}
+    </p>
+    {{end}}
+  </div>
+</div>
+
+<!-- Add peer modal -->
+<div class="modal-backdrop" id="addModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <h2>{{t "msg.new_peer"}}</h2>
+    <form method="post" action="/peer/add">
+      <div class="form-group">
+        <label>{{t "label.name_hint"}}</label>
+        <input type="text" name="name" placeholder="phone-ivan" required
+               pattern="[a-zA-Z0-9_-]+" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>{{t "label.ip"}}</label>
+        <input type="text" name="ip" placeholder="{{.NextIP}}">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost"
+                onclick="document.getElementById('addModal').classList.remove('open')">
+          {{t "btn.cancel"}}
+        </button>
+        <button type="submit" class="btn btn-primary">{{t "btn.create"}}</button>
+      </div>
+    </form>
+  </div>
+</div>
+{{end}}

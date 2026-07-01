@@ -1,0 +1,51 @@
+{{define "title"}}{{t "page.settings"}}{{end}}
+
+{{define "body"}}
+<nav class="nav">
+  <div class="nav-brand">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    WireGuard UI <span class="ver">{{version}}</span>
+  </div>
+  <div class="nav-links">
+    <a href="/status">{{t "nav.status"}}</a>
+    <a href="/logout">{{t "nav.logout"}}</a>
+  </div>
+</nav>
+<div class="container">
+  {{range .Flashes}}
+  <div class="alert alert-{{.Category}}">{{.Text}}</div>
+  {{end}}
+
+  <div class="card" style="max-width:560px;margin:0 auto;">
+    <div class="card-header">
+      <span class="card-title">{{t "section.server"}}</span>
+    </div>
+    <form method="post" action="/settings" style="padding:1.5rem;">
+      <div class="form-group">
+        <label>{{t "label.host"}}</label>
+        <input type="text" name="host" value="{{.Host}}" placeholder="vpn.example.com" autocomplete="off">
+        <small style="color:var(--muted)">{{t "label.host_hint"}}</small>
+      </div>
+      <div class="form-group">
+        <label>{{t "label.dns"}}</label>
+        <input type="text" name="dns" value="{{.DNS}}" placeholder="1.1.1.1, 8.8.8.8" autocomplete="off">
+        <small style="color:var(--muted)">{{t "label.dns_hint"}}</small>
+      </div>
+      <div style="display:flex;gap:.75rem;justify-content:flex-end;">
+        <button type="submit" class="btn btn-primary">{{t "btn.save"}}</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="max-width:560px;margin:1.5rem auto 0;">
+    <div class="card-header">
+      <span class="card-title">{{t "section.security"}}</span>
+    </div>
+    <div style="padding:1.5rem;">
+      <a href="/change-password" class="btn btn-ghost">{{t "btn.change_password"}}</a>
+    </div>
+  </div>
+</div>
+{{end}}

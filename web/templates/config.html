@@ -1,0 +1,40 @@
+{{define "title"}}{{printf (t "page.config") .Peer.Name}}{{end}}
+
+{{define "body"}}
+<nav class="nav">
+  <div class="nav-brand">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    WireGuard UI <span class="ver">{{version}}</span>
+  </div>
+  <div class="nav-links">
+    <a href="/">{{t "nav.back"}}</a>
+    <a href="/settings">{{t "nav.settings"}}</a>
+    <a href="/logout">{{t "nav.logout"}}</a>
+  </div>
+</nav>
+<div class="container">
+  {{range .Flashes}}
+  <div class="alert alert-{{.Category}}">{{.Text}}</div>
+  {{end}}
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">{{.Peer.Name}} — {{.Peer.IP}}</span>
+      <a href="/peer/{{.Peer.Name}}/download" class="btn btn-primary btn-sm">
+        {{t "btn.download"}}
+      </a>
+    </div>
+    <pre class="config-box">{{.ConfigText}}</pre>
+    <div class="qr-wrap">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:.5rem">
+        {{t "msg.scan_qr"}}
+      </p>
+      <img src="/peer/{{.Peer.Name}}/qr" alt="QR" width="256" height="256">
+    </div>
+    <div style="text-align:center;margin-top:1.5rem">
+      <a href="/" class="btn btn-ghost">{{t "nav.back_peers"}}</a>
+    </div>
+  </div>
+</div>
+{{end}}
